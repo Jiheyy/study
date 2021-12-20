@@ -22,282 +22,108 @@ using namespace std;
 
 최소 몇 번 만에 빨간 구슬을 구멍을 통해 빼낼 수 있는지 구하는 프로그램을 작성하시오. (BFS)
 */
-
-struct TURN {
+struct INFO {
 	int by, bx, ry, rx; // 위치
-	int sec;
+	int cnt;
 };
 
-
-// y, x
-int n, m, answer;
-int blank_y, blank_x;
-
-vector <string> arr;
-
-/*
-TURN set_turn(vector <string> arr, int sec) {
-
-	TURN res;
-	res.sec = sec;
-
-	for(int i=0; i<arr.size(); i++)
-		for(int j=0; j<arr[0].size(); j++) {
-			if(arr[i][j] == 'R') {
-				res.ry = i;
-				res.rx = j;
-			}
-			else if(arr[i][j] == 'B') {
-				res.by = i;
-				res.bx = j;
-			}
-
-			else if(arr[i][j] != '#' && arr[i][j] != '.') {
-				res.blank_y = i;
-				res.blank_x = j;
-			}
-		}
-	return res;
-}
-*/
-// 왼쪽으로 기울이기
-TURN left(TURN turn) {
-	vector <string> arr = turn.arr;
-	bool game_end = false;
-
-	for(int i=1; i<arr.size()-1; i++) {
-		for(int j=1; j<arr[0].size()-1; j++) {
-			int move = 0;
-
-			if(arr[i][j] != 'R' & arr[i][j] != 'B')
-				continue;
-
-			while(true) {
-				move++;
-
-				if(i == turn.blank_y && j+move == turn.blank_x) {	
-					move--;
-					game_end = true;
-					break;
-				}
-
-				if (arr[i][j-move] != '.') {
-					move--;
-					break;
-				}
-			}
-			if(move > 0) {
-				arr[i][j-move] = arr[i][j];
-				arr[i][j] = '.';
-			}
-		}
-	}
-
-	TURN next_turn = set_turn(arr, turn.sec+1);
-
-	if(game_end) {
-		next_turn.last = true;
-	}
-
-	return next_turn;
-}
-
-
-// 아래로 기울이기 // gravity
-TURN down(TURN turn) {
-
-	vector <string> arr = turn.arr;
-	bool game_end = false;
-
-	for(int i=1; i<arr[0].size()-1; i++) {
-		for(int j=arr.size()-2; j>0; j--) {
-			
-			if(arr[i][j] != 'R' & arr[i][j] != 'B')
-				continue;
-
-			int move = 0;
-			while(true) {
-				move++;
-
-				// game end
-				if(i == turn.blank_y && j+move == turn.blank_x) {	
-					move--;
-					game_end = true;
-					break;
-				}
-
-				if (arr[i+move][j] != '.') {
-					move--;
-					break;
-				}
-			}
-
-			if(move > 0) {
-				arr[i+move][j] = arr[i][j];
-				arr[i][j] = '.';
-			}
-		}
-	}
-
-	TURN next_turn = set_turn(arr, turn.sec+1);
-	if(game_end) {
-		next_turn.last = true;
-	}
-	return next_turn;
-}
-
-
-TURN up(TURN turn) {
-	
-	vector <string> arr = turn.arr;
-	bool game_end = false;
-
-	for(int i=1; i<arr[0].size()-1; i++) {
-		for(int j=1; j<arr.size()-1; j++) {
-			int move = 0;
-
-			if(arr[i][j] != 'R' & arr[i][j] != 'B')
-				continue;
-
-			while(true) {
-				move++;
-				// game end
-				if(i == turn.blank_y && j+move == turn.blank_x) {	
-					move--;
-					game_end = true;
-					break;
-				}
-				if (arr[i-move][j] != '.') {
-					move--;
-					break;
-				}
-			}
-			if(move > 0) {
-				arr[i-move][j] = arr[i][j];
-				arr[i][j] = '.';
-			}
-		}
-	}
-
-	TURN next_turn = set_turn(arr, turn.sec+1);
-	if(game_end) {
-		next_turn.last = true;
-	}
-	return next_turn;
-}
-
-
-TURN right(TURN turn) {
-
-	vector <string> arr = turn.arr;
-	bool game_end = false;
-
-	for(int i=1; i<arr.size()-1; i++) {
-		for(int j=1; j<arr[0].size()-1; j++) {
-			int move = 0;
-
-			if(arr[i][j] != 'R' && arr[i][j] != 'B')
-				continue;
-
-			while(true) {
-				move++;
-				// game end
-				if(i == turn.blank_y && j+move == turn.blank_x) {	
-					move--;
-					game_end = true;
-					break;
-				}
-				
-
-				if (arr[i][j+move] != '.') {
-					move--;
-					break;
-				}
-			}
-			if(move > 0) {
-				arr[i][j+move] = arr[i][j];
-				arr[i][j] = '.';
-			}
-		}
-	}
-
-	TURN next_turn = set_turn(arr, turn.sec+1);
-
-	if(game_end) {
-		next_turn.last = true;
-	}
-
-	return next_turn;
-}
-
-
-
-// check wheather game is continue or not
-bool success_checker(TURN turn) {
-	// game end
-	if (turn.blank_y == turn.by && turn.blank_x == turn.bx)
-		return false;
-
-	// it can be continue
-	return true;
-}
+int n,m;
+INFO start;
+int answer = -1;
+string map[11];
+int dx[] = {1, 0, 0, -1};
+int dy[] = {0, 1, -1, 0};
 
 
 
 void BFS() {
+	
+	bool visit[10][10][10][10] = { false };
 
-	queue <TURN> q;
-	TURN game = set_turn(arr, 0);
-	q.push(game);
+	queue <INFO> q;
+	q.push(start);
+	visit[start.rx][start.ry][start.bx][start.by] = true;
+
 
 	while(!q.empty()) {
-		TURN cur = q.front();
-		q.pop();
+		INFO cur = q.front(); 	q.pop();
 
-		if(cur.last == true) {
-			answer = cur.sec;
+		if(cur.cnt > 10)
+			return;
+		if(map[cur.rx][cur.ry] == 'O' && map[cur.bx][cur.by] != 'O') {
+			answer = cur.cnt;
 			return;
 		}
-		printf("--------------\n");
-		for(int i=0; i<cur.arr.size(); i++) {
-			for(int j=0; j<cur.arr[0].size(); j++)
-				printf("%c ", cur.arr[i][j]);
-			printf("\n");
-		}
-		
-
-		// check 
-		if (cur.blank_y == cur.ry && cur.blank_x == cur.rx) {
-			answer = cur.sec;
-			return;
-		}
-
-		if(cur.sec > 10) {
-			answer = -1;
-			return;
-		}
-		
-		TURN next_turn;
 
 		//왼쪽으로 기울이기, 오른쪽으로 기울이기, 위쪽으로 기울이기, 아래쪽으로 기울이기
-		
-		next_turn = left(cur);
-		if (success_checker(next_turn))
-			q.push(next_turn);
-		
-		next_turn = right(cur);
-		if (success_checker(next_turn))
-			q.push(next_turn);
-		
-		
-		next_turn = up(cur);
-		if (success_checker(next_turn))
-			q.push(next_turn);
+		for(int i=0; i<4; i++) {
+			int next_rx = cur.rx;
+			int next_ry = cur.ry;
+			int next_bx = cur.bx;
+			int next_by = cur.by;
+			// 	빨간공이 벽에 닿을때까지 간다.
+			while(1) {
+				// .
+				if (map[next_rx][next_ry] != '#' && map[next_rx][next_ry] != 'O') {
+					next_rx += dx[i];
+					next_ry += dy[i];
+				}
+				// # or O
+				else {
+					// #
+					if(map[next_rx][next_ry] == '#') {
+						next_rx -= dx[i];
+						next_ry -= dy[i];
+					}
+					break;
+				}
+			}
 
-		next_turn = down(cur);
-		if (success_checker(next_turn))
-			q.push(next_turn);
-		
+			// 	파란공이 벽에 닿을때까지 간다.
+			while(1) {
+				// .
+				if (map[next_bx][next_by] != '#' && map[next_bx][next_by] != 'O') {
+					next_bx += dx[i];
+					next_by += dy[i];
+				}
+				// # or O
+				else {
+					// #
+					if(map[next_bx][next_by] == '#') {
+						next_bx -= dx[i];
+						next_by -= dy[i];
+					}
+					break;
+				}
+			}
+			// 둘이 겹쳤을 경우 더 많이 움직인쪽을 하나 백한다. 
+			if(next_rx == next_bx && next_ry == next_by) {
+				if(map[next_rx][next_ry] != 'O') {
+					int red_dist = abs(next_ry - cur.ry) + abs(next_rx - cur.rx);
+					int blue_dist = abs(next_by - cur.by) + abs(next_bx - cur.bx);
+
+					if (red_dist >= blue_dist) {
+						next_rx -= dx[i];
+						next_ry -= dy[i];
+					}
+					else {
+						next_bx -= dx[i];
+						next_by -= dy[i];
+					}
+				}
+			}
+			// 방문확인
+			if(visit[next_rx][next_ry][next_bx][next_by] == false) {
+				visit[next_rx][next_ry][next_bx][next_by] = true;
+				INFO next;
+				next.rx = next_rx;
+				next.ry = next_ry;
+				next.bx = next_bx;
+				next.by = next_by;
+				next.cnt = cur.cnt + 1;
+				q.push(next);
+			}
+		}
 	}
 
 }
@@ -308,14 +134,21 @@ int main() {
 	scanf("%d %d", &n, &m);
 
 	for(int i=0; i<n; i++) {
-		string tmp = "";
-		cin >> tmp;
-		arr.push_back(tmp);
+		cin >> map[i];
+		for (int j=0; j<m; j++) {
+			if(map[i][j] == 'R') {
+				start.rx = i;
+				start.ry = j;
+			}
+			if(map[i][j] == 'B') {
+				start.bx = i;
+				start.by = j;
+			}
+		}
+		
 	}
-
+	start.cnt = 0;
 	BFS();
-
-	printf("%d\n",answer);
-
+	printf("%d\n", answer);
 	return 0;
 }
