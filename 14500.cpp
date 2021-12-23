@@ -19,7 +19,6 @@ int DFS(int y, int x, int cnt) {
 	
 	int sum = 0;
 
-
 	// 2. check each v ele.
 	for(int i=0; i<4; i++) {
 		int ny = y + dy[i];
@@ -61,8 +60,6 @@ int middleFinger(int y, int x) {
 	}
 
 	return result;
-
-
 }
 
 
