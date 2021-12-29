@@ -23,7 +23,6 @@ bool inRange(int y, int x){
     return y>=0 && x>=0 && y<N && x<N;
 }
 
-
 int blowSand(int y, int x, int dir){
     int ret=0, init=A[y][x];
 
