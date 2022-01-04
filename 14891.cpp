@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 struct Tire {
@@ -27,24 +28,14 @@ void turnTire(int no, int dir) {
 	// clockwise
 	if (dir == 1) {
 		tire[no].mag[0] = copy_mag[7];
-		tire[no].mag[1] = copy_mag[0];
-		tire[no].mag[2] = copy_mag[1];
-		tire[no].mag[3] = copy_mag[2];
-		tire[no].mag[4] = copy_mag[3];
-		tire[no].mag[5] = copy_mag[4];
-		tire[no].mag[6] = copy_mag[5];
-		tire[no].mag[7] = copy_mag[6];
+		for(int i=1; i<8; i++)
+			tire[no].mag[i] = copy_mag[i-1];
 
 	}
 	else if(dir == -1){
 		tire[no].mag[7] = copy_mag[0];
-		tire[no].mag[0] = copy_mag[1];
-		tire[no].mag[1] = copy_mag[2];
-		tire[no].mag[2] = copy_mag[3];
-		tire[no].mag[3] = copy_mag[4];
-		tire[no].mag[4] = copy_mag[5];
-		tire[no].mag[5] = copy_mag[6];
-		tire[no].mag[6] = copy_mag[7];
+		for(int i=0; i<7; i++)
+			tire[no].mag[i] = copy_mag[i+1];
 	}
 
 }
@@ -55,7 +46,6 @@ void solve(int tire_no, int dir) {
 
 	// -> check
 	for(int no = tire_no; no < 3; no++) {
-
 
 		// do not turn
 		if (tire[no].mag[2] == tire[no+1].mag[6]) {
@@ -90,15 +80,9 @@ void solve(int tire_no, int dir) {
 int count() {
 	int ret = 0;
 
-	if(tire[0].mag[0] == '1')
-		ret += 1;
-	if(tire[1].mag[0] == '1')
-		ret+= 2;
-	if(tire[2].mag[0] == '1')
-		ret+= 4;
-	if(tire[3].mag[0] == '1')
-		ret+= 8;
-
+	for(int i=0; i<4; i++)
+		if(tire[i].mag[0] == '1')
+			ret += pow(2, i);
 	return ret;
 	
 }
