@@ -6,124 +6,110 @@
 
 using namespace std;
 
-struct Camera {
-	int y, x, dir, no;
+const int rot_size[] = {4, 2, 4, 4, 1};
+
+struct CCTV {
+	int y, x, no;
 };
-vector <Camera> cam;
+CCTV cctv[9];
+int cctv_size;
+
 int n, m;
 int res = 987654321;
 int map[10][10];
 
-vector<int> v;
+void update(int dir, CCTV cctv) {
 
-// clock wise
-const int dy[4] = {1, 0, -1, 0};
-const int dx[4] = {0, 1, 0, -1};
-
-bool select[10];
-
-bool checkBound(int y, int x){
-	if (y < 0 || y >= n || x < 0 || x >= m)
-		return false;
-
-	return true;
-} 
-
-
-void setCam(vector <int> v) {
-
-	bool visit[10][10] = {false,};
-
-	for(int i=0; i<v.size(); i++) {
-		Camera c = cam[i];
-		int dir = v[i];
-
-		vector <int> sight;
-
-		if(c.no == 1) {
-			int right_d = (dir+1) % 4;
-			sight.push_back(right_d);
-		}
-		else if(c.no == 2) {
-			int left_d = (dir + 3) %4;
-			int right_d = (dir +1) %4;
-			sight.push_back(left_d);
-			sight.push_back(right_d);	
-		}
-		else if(c.no == 3) {
-			int up_d = dir % 4;
-			int right_d = (dir+1) % 4;
-			sight.push_back(up_d);
-			sight.push_back(right_d);
-		}
-		else if(c.no == 4) {
-			int up_d = dir % 4;
-			int left_d = (dir + 3) %4;
-			int right_d = (dir +1) %4;
-			sight.push_back(up_d);
-			sight.push_back(left_d);
-			sight.push_back(right_d);	
-		}
-		else if (c.no == 5) {
-			sight.push_back(0);
-			sight.push_back(1);
-			sight.push_back(2);
-			sight.push_back(3);
-		}
-
-		for(int s=0; s<sight.size(); s++) {
-			int ny = c.y;
-			int nx = c.x;
-			visit[ny][nx] = true;
-
-			while(true) {
-				int ny = ny + dy[sight[s]];
-				int nx = nx + dx[sight[s]];
-
-				if(checkBound(ny, nx) == false) break;
-
-				if(map[ny][nx] == 6) {
-					visit[ny][nx] = true;
-					break;
-				}
-				if(map[ny][nx] > 0 && map[ny][nx] <= 5) {
-					visit[ny][nx] = true;
-					continue;
-				}
-				else if(map[ny][nx] == 0){
-					visit[ny][nx] = true;
-				}
-			}
+	dir = (dir % 4);
+	// 동남서북
+	if(dir == 0) {
+		for(int x=cctv.x+1; x<m; x++) {
+			if(map[cctv.y][x] == 6)
+				break;
+			else 
+				map[cctv.y][x] = -1;
 		}
 	}
-
-	
-
-	// count invisible spot
-	int invisible = 0;
-	for(int i=0; i<n; i++)
-		for(int j=0; j<m; j++) 
-			if(visit[i][j] == false)
-				invisible++;
-
-
-	res = min(res, invisible);
+	if(dir == 1) {
+		for(int y=cctv.y+1; y<n; y++) {
+			if(map[y][cctv.x] == 6)
+				break;
+			else 
+				map[y][cctv.x] = -1;
+		}
+		
+	}
+	if(dir == 2) {
+		for(int x=cctv.x-1; x>=0; x--) {
+			if(map[cctv.y][x] == 6)
+				break;
+			else 
+				map[cctv.y][x] = -1;
+		}
+	}
+	if(dir == 3) {
+		for(int y=cctv.y-1; y>=0; y--) {
+			if(map[y][cctv.x] == 6)
+				break;
+			else 
+				map[y][cctv.x] = -1;
+		}
+	}
 
 }
 
-// 중복 순열 
-// 4 개로 카메라갯수만큼 길이의 순열을 구해야함
-void DFS(int cnt) {
+void map_copy(int desc[][10], int src[][10]) {
+	for(int i=0; i<n; i++)
+		for(int j=0; j<m; j++)
+			desc[i][j] = src[i][j];
+}
 
-	if(cnt == cam.size()) {
-		setCam(v);
+
+void DFS(int cctv_index) {
+
+	if(cctv_index == cctv_size) {
+		int candi = 0;
+		
+		for(int i=0; i<n; i++){
+			for(int j=0; j<m; j++) {
+				if(map[i][j] == 0)
+					candi++;
+			}
+		}
+		res = min(candi, res);
 		return;
 	}
 
-	for(int i=0; i<4; i++) {
-		v.push_back(i);
-		DFS(cnt+1);
-		v.pop_back();
+	int backup[10][10] = {0,};
+	int type = cctv[cctv_index].no;
+
+	for(int dir=0; dir<rot_size[type]; dir++) {
+		map_copy(backup, map);
+		// 동남서북
+		if(type == 0) {
+			update(dir, cctv[cctv_index]);
+		}
+		if(type == 1) {
+			update(dir, cctv[cctv_index]);
+			update(dir+2, cctv[cctv_index]);
+		}
+		if(type == 2) {
+			update(dir, cctv[cctv_index]);
+			update(dir+1, cctv[cctv_index]);
+		}
+		if(type == 3) {
+			update(dir, cctv[cctv_index]);
+			update(dir+3, cctv[cctv_index]);
+			update(dir+1, cctv[cctv_index]);
+		}
+		if(type == 4) {
+			update(dir, cctv[cctv_index]);
+			update(dir+1, cctv[cctv_index]);
+			update(dir+2, cctv[cctv_index]);
+			update(dir+3, cctv[cctv_index]);
+		}
+		DFS(cctv_index+1);
+		map_copy(map, backup);
 	}
 }
 
@@ -135,14 +121,16 @@ int main() {
 	for(int i=0; i<n; i++)
 		for(int j=0; j<m; j++) {
 			scanf("%d", &map[i][j]);
-			if(map[i][j] != 0) {
-				Camera tmp;
-				tmp.y = i; tmp.x = j;
-				tmp.no = map[i][j];
+			if(map[i][j] != 0 && map[i][j] != 6) {
+				cctv[cctv_size].y = i; 
+				cctv[cctv_size].x = j;
+				cctv[cctv_size].no = map[i][j]-1;
+				cctv_size++;
 			}
 		}
 
 	DFS(0);
+
 
 	printf("%d\n", res);
 
