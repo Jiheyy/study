@@ -11,11 +11,6 @@ struct MOVE{
 	int s;
 	int d;
 };
-
-struct Cloud {
-	int y, x;
-};
-
 vector <MOVE> mv;
 
 
@@ -30,16 +25,11 @@ int makeRange(int a) {
 
 void solve() {
 
-	vector <Cloud> cloud;
-	Cloud c1, c2, c3, c4;
-	c1.y = n-1; c1.x = 0; 
-	c2.y = n-1; c2.x = 1;
-	c3.y = n-2; c3.x = 0; 
-	c4.y = n-2; c4.x = 1;
-	cloud.push_back(c1);
-	cloud.push_back(c2);
-	cloud.push_back(c3);
-	cloud.push_back(c4);
+	vector <pair <int, int>> cloud;
+	cloud.push_back(make_pair(n-1, 0));
+	cloud.push_back(make_pair(n-1, 1));
+	cloud.push_back(make_pair(n-2, 0));
+	cloud.push_back(make_pair(n-2, 1));
 
 	int idx = 0;
 	while(idx < m) {
@@ -47,31 +37,29 @@ void solve() {
 		for(int i=0; i<cloud.size(); i++) {
 
 			int s = mv[idx].s;
-			int cy = cloud[i].y;
-			int cx = cloud[i].x;
+			int d = mv[idx].d;
+			int cy = cloud[i].first;
+			int cx = cloud[i].second;
 
 			while(s--) {
-				int ny = cy + dy[mv[idx].d];
-				int nx = cx + dx[mv[idx].d];
+				int ny = cy + dy[d];
+				int nx = cx + dx[d];
 
 				cy = makeRange(ny);
 				cx = makeRange(nx);
 			}
-
-			cloud[i].x = cx;
-			cloud[i].y = cy;
+			cloud[i].first = cy;
+			cloud[i].second = cx;
 		}
 
 		bool visit[50][50] = {false,};
 
 		for(int i=0; i<cloud.size(); i++) {
-			int y = cloud[i].y;
-			int x = cloud[i].x;
-			//if(visit[y][x] == false) {
+			int y = cloud[i].first;
+			int x = cloud[i].second;
 			map[y][x]++;
 			visit[y][x] = true;
 			rain.push_back(make_pair(y, x));
-			//}
 		}
 
 		cloud.clear();
@@ -98,9 +86,7 @@ void solve() {
 		for(int i=0; i<n; i++)
 			for(int j=0; j<n; j++) {
 				if(map[i][j] >= 2 && visit[i][j] == false) {
-					Cloud c1;
-					c1.y = i; c1.x = j; 
-					cloud.push_back(c1);
+					cloud.push_back(make_pair(i, j));
 					map[i][j]-=2;
 				}
 			}
