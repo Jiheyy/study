@@ -1,37 +1,31 @@
-void mvBlock(table& t, crashed& c, int sy, int sx, int i) {
-    int ny, nx;
-    int next, prev;
-    bool first = false;
-    ny = 0;
-    nx = 0;
-
-    while(true) {
-        ny = sy + dy[i];
-        nx = sx + dx[i];
-
-        if(ny <0 || ny>=n || nx <0 || nx >= n) break;
-
-        if(t[ny][nx]== 0) {
-            swap(t[ny][nx], t[sy][sx]); // swap!!!
-            sy = ny;
-            sx = nx;
-            continue;
-        }
-        else {
-            next = t[ny][nx];
-            prev = t[sy][sx];
-            // 한 번의 이동에서 이미 합쳐진 블록은 또 다른 블록과 다시 합쳐질 수 없다.
-            if(next == prev && !c[ny][nx] && !first) {
-                t[ny][nx] *= 2;
-                t[sy][sx] = 0;
-                first = true;
-                c[ny][nx] = true;
-                sy = ny;
-                sx = nx;
-                continue;
-            }
-            else
-                break;
-        }
-    }
+#include <iostream>
+using namespace std;
+ 
+int n,stair[301];
+int dp[301];
+ 
+int Max(int a, int b) {
+    return a > b ? a : b;
 }
+ 
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        cin >> stair[i];
+    }
+ 
+    dp[0] = stair[0];
+    dp[1] = Max(stair[0]+stair[1],stair[1]);
+    dp[2] = Max(stair[0]+stair[2],stair[1]+stair[2]);
+ 
+    for (int i = 3; i < n; i++) {
+        dp[i] = Max(dp[i-2]+stair[i], stair[i-1]+stair[i]+dp[i-3]);
+    }
+ 
+    cout << dp[n - 1] << '\n';
+ 
+    return 0;
+}
+
+
+출처: https://kwanghyuk.tistory.com/4 [KHAN]
