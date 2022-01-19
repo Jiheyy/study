@@ -1,54 +1,33 @@
 #include <iostream>
 #include <cmath>
 using namespace std;
+int n;
+int r, c;
+int no;
 
-// 분할정복
-
+// y, x 탐색 시작 위치
+// l 한 변의 길이
+void divide_conquer(int y, int x, int l) {
+    
+    if(y == r && x == c) {
+        printf("%d\n", no);
+        exit(0);
+    }
+    // 영역 안에 존재하면 분할
+    if(r < y+l && c < x+l) {
+        divide_conquer(y, x, l/2);
+        divide_conquer(y, x+l/2, l/2);
+        divide_conquer(y+l/2, x, l/2);
+        divide_conquer(y+l/2, x+l/2, l/2);
+    }
+    else 
+        no += l*l;
+}
 
 int main() {
-	int n, r, c;
-	//long long arr[40000][40000];
-
-	int no = -1;
-
-	scanf("%d %d %d", &n, &r, &c);
-	int block = 0;
-	for(int i=0; i<pow(2, n); i+=2) {
-		for(int j=0; j<pow(2, n); j+=2) {
-
-			if(i == r && j == c) {
-				printf("%d\n", block*4 + 1);
-				break;
-			}
-			else if(i==r && j+1 == c) {
-				printf("%d\n", block*4 + 2);
-				break;
-			}
-			else if(i+1==r && j == c){
-				printf("%d\n", block*4 +3);
-				break;
-			}
-			else if(i+1 == r && j+1 == c) {
-				printf("%d\n", block* 4 + 3);
-				break;
-			}
-
-			else
-				no += 4;
-			/*
-			arr[i][j] = ++no;
-			arr[i][j+1] = ++no;
-			arr[i+1][j] = ++no;
-			arr[i+1][j+1] = ++no;
-			*/
-		}
-	}
-	/*
-	for(int i=0; i<pow(2, n); i++) {
-		for(int j=0; j<pow(2, n); j++)
-			printf("%d ", arr[i][j]);
-		printf("\n");
-	}
-	*/
-	//printf("%d\n", arr[r][c]);
+    scanf("%d", &n);
+    
+    scanf("%d %d", &r, &c);
+    
+    divide_conquer(0, 0, pow(2, n));
 }
