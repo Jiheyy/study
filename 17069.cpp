@@ -3,54 +3,10 @@
 
 using namespace std;
 
-const int dy[] = {0, 1, 1};
-const int dx[] = {1, 0, 1};
-
-struct POS {
-	int y, x;
-	int dir;
-};
-int answer;
+unsigned long long answer;
 int n;
 int map[33][33];
-bool visit[33][33];
-
-void dfs(int y, int x, int dir) {
-	int ny = y + dy[dir];
-	int nx = x + dx[dir];
-
-	if(ny == n && nx == n) {
-		answer++;
-		return;
-	}
-
-	if(ny > n || nx > n || ny <= 0 || nx <= 0 || map[ny][nx] == 1|| visit[ny][nx]) 
-		return;
-
-	visit[ny][nx] = true;
-	//가로
-	if(dir == 0) {
-		if(map[ny][nx+1] != 1)
-			dfs(ny, nx, 0);
-		if(map[ny][nx+1] != 1 && map[ny+1][nx] != 1 && map[ny+1][nx+1] != 1)
-			dfs(ny, nx, 2);
-	}
-	else if(dir == 1) {
-		if(map[ny+1][nx] != 1)
-			dfs(ny, nx, 1);
-		if(map[ny][nx+1] != 1 && map[ny+1][nx] != 1 && map[ny+1][nx+1] != 1)
-			dfs(ny, nx, 2);
-	}
-	else if(dir == 2) {
-		if(map[ny][nx+1] != 1)
-			dfs(ny, nx, 0);
-		if(map[ny+1][nx] != 1)
-			dfs(ny, nx, 1);
-		if(map[ny][nx+1] != 1 && map[ny+1][nx] != 1 && map[ny+1][nx+1] != 1)
-			dfs(ny, nx, 2);
-	}
-	visit[ny][nx] = false;
-}
+unsigned long long dp[3][33][33];
 
 int main() {
 
@@ -62,7 +18,30 @@ int main() {
 		}
 	}
 
-	dfs(1, 1, 0);
+	for(int i=2; i<=n; i++) {
+		if(map[1][i] == 1) break;
+		dp[0][1][i] = 1;
+	}
 
-	printf("%d\n", answer);
+	for (int r = 2; r <= n; r++)
+    {
+        for (int c = 2; c <= n; c++)
+        {
+            if (map[r][c] == 1)
+                continue;
+
+            dp[0][r][c] = dp[0][r][c - 1] + dp[2][r][c - 1];
+
+            dp[1][r][c] = dp[1][r - 1][c] + dp[2][r - 1][c];
+
+            if (map[r - 1][c] != 1 && map[r][c - 1] != 1)
+                dp[2][r][c] = dp[0][r - 1][c - 1] + dp[1][r - 1][c - 1] + dp[2][r - 1][c - 1];
+        }
+    }
+
+    for(int i=0; i<3; i++) {
+    	answer += dp[i][n][n];
+    }
+
+	printf("%llu\n", answer);
 }
