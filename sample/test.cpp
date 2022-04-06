@@ -15,12 +15,11 @@ void test1() {
 		global_var = 1;
 	
 	pid3 = getpid();
-
-	cout << pid1 << pid2 << pid3 << global_var <<endl;
+	
+	printf("pid1 : %d pid2 : %d pid2 : %d global_var : %d\n", pid1, pid2, pid3, global_var);
 }
 
 int main() {
 	test1();
 }
-
-global_var = 10;
+int global_var = 10;
