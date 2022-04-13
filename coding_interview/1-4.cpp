@@ -1,30 +1,45 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-bool solve(string a) {
-	int len = a.size()-1;
+int visit[128];
 
-	for(int i=0; i<a.size()-2; i++) {
-		char front = a[i];
-		char back = a[len-i];
+bool solve(string str) {
 
-		if(front != back)
-			return false;
+	string a = "";
+
+	for(auto ele : str) {
+		if(ele != ' ')
+			a+= ele;
 	}
 
-	return true;
+	int len = a.size();
+
+	for(int i=0; i<str.size(); i++) {
+		visit[str[i]]++;
+	}
+
+	int cnt = 0;
+	for(int i=0; i<128; i++)
+		if(visit[i]%2 != 0)
+			cnt++;
+
+	if(cnt <= 1)
+		return true;
+	
+	return false;
 
 }
 
-int main() {
-	//string a = "abccba";
-	string a = "atco cta";
 
-	bool answer = solve(a);
+int main () {
+	string a = "tactcoapapa";
 
-	if(answer)
-		printf("palindrome");
+	if(solve(a))
+		cout << "true" <<endl;
 	else
-		printf("no");
+		cout << "false";
+
 }

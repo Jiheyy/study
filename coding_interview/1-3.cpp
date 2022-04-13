@@ -1,38 +1,40 @@
+
 #include <iostream>
 #include <vector>
 #include <cstring>
 using namespace std;
 
+char ret[100];
 
-string solve(string a, int len) {
-	string ret = "";
-	vector <string> v;
+void solve(string str, int no) {
 
-	for(int i=a.size(); i>=0; i--) {
-		string alphabet;
-		alphabet += a[i];
-		if(a[i] == ' ') {
-			v.push_back("%20");
+	int idx = 99;
+	for(int i=no-1; i>=0; i--) {
+		if(str[i] == ' ') {
+			ret[idx] = '0';
+			ret[idx-1] = '2';
+			ret[idx-2] = '%';
+			idx-=3;
 		}
-		else
-			v.push_back(alphabet);
+		else{
+			ret[idx] = str[i];
+			idx--;
+		}
+
 	}
 
-	for(int i=v.size()-1; i>=0; i--) {
-		ret += v[i];
+	for(int i=idx; i<=99; i++) {
+		printf("%c", ret[i]);
 	}
 
-	return ret;
 }
 
 
 int main() {
 
-	string a = "Mr. John Smith";
-	int len = 13;
+	string a = "Mr John Smith";
+	int no = 13;
 
-	string answer = solve(a, len);
-
-	cout << answer <<endl;
+	solve(a, no);
 
 }
