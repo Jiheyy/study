@@ -15,7 +15,8 @@ int main() {
 					arr[i][a] = 0;
 
 				for(int a=0; a<n; a++)
-					arr[a][j] = 0;
+					arr[a][j] = 0
+					
 					
 			}
 		}
