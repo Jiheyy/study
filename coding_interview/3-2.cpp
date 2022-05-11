@@ -1,35 +1,41 @@
 #include <iostream>
-#include <vector>
-#include <unordered_set>
+#include <stack>
+#include <set>
+
 using namespace std;
 
+class STACK {
+private:
+	stack <int> s;
+	set <int> m;
+public:
 
-void push(vector <unordered_set>& v, int no) {
-	v.push(no);
-}
+	int pop() {
+		int no = s.top();
+		s.pop();
+		return no;
+	}
 
-void pop(vector <uno> &V) {
+	void push(int ele) {
+		s.push(ele);
+		m.insert(ele);
+	}
 
-	int head = v[v.size()-1];
-	cout << head <<endl;
-
-	v.erase(v.size()-1);
-}
-
-
-void min()
-
+	int min() {
+		int value = *m.begin();
+		m.erase(value);
+		return value;
+	}
+};
 
 int main() {
 
-	vector <int> v;
+	STACK st;
+	st.push(1);
+	st.push(2);
+	st.push(-1);
 
-	push(v, 1);
-	push(v, 3);
-	push(v, 5);
-	pop(v);
-
-	cout << min(v) <<endl;
+	cout << st.min();
 
 
 }
