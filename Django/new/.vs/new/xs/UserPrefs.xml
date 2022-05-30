@@ -1,0 +1,15 @@
+﻿<Properties StartupConfiguration="{4C360868-3D1A-4625-ADCB-99EE19CE1BCA}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../lotto/__init__.py">
+    <Files>
+      <File FileName="../lotto/__init__.py" Line="1" Column="1" />
+      <File FileName="../manage.py" Line="7" Column="8" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.new FirstBuild="True" PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>
